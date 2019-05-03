@@ -10,15 +10,43 @@ This repository is instruction for demo with simple app using Spring Boot + Vaul
 ## How to Demo
 
 ### Prepartion
-* Ensure Java 12 is installed.
-* Ensure the latest Consul and Vault is installed.
-* Ensure MySQL 5.7 is installed.
+* Make sure Java 12 is installed.
+* Make sure the latest Consul and Vault is installed.
+* Make sure MySQL 5.7 is installed.
 
 First, run Consul and Vault `-dev` mode.
 ```console
 $ export VAULT_ADDR='http://127.0.0.1:8200'
 $ vault server -dev
+==> Vault server configuration:
+
+             Api Address: http://127.0.0.1:8200
+                     Cgo: disabled
+         Cluster Address: https://127.0.0.1:8201
+              Listener 1: tcp (addr: "127.0.0.1:8200", cluster address: "127.0.0.1:8201", max_request_duration: "1m30s", max_request_size: "33554432", tls: "disabled")
+               Log Level: info
+                   Mlock: supported: false, enabled: false
+                 Storage: inmem
+                 Version: Vault v1.1.1
+             Version Sha: a3dcd63451cf6da1d04928b601bbe9748d53842e
+
+WARNING! dev mode is enabled! In this mode, Vault runs entirely in-memory
+and starts unsealed with a single unseal key. The root token is already
+authenticated to the CLI, so you can immediately begin using Vault.
+
+You may need to set the following environment variable:
+
+    $ export VAULT_ADDR='http://127.0.0.1:8200'
+
+The unseal key and root token are displayed below in case you want to
+seal/unseal the Vault or re-authenticate.
+
+Unseal Key: qZAvT/ztCUq8C7liyFG0cG6osIrIi2DtULxAG9zE+nY=
+Root Token: s.HEWWO9vQQK2Wc8rYGbKa6n7U
+
+Development mode should NOT be used in production installations!
 ```
+Take `Root Token` value in the note.
 
 ```console
 $ consul agent -dev
@@ -107,4 +135,85 @@ lease_renewable    true
 password           A1a-UwPd7NKUxkyyxY4d
 username           v-root-my-role-FRICYJqHBbxLY55GY
 ```
+
+### Running API App
+```console
+$ git clone https://github.com/tkaburagi/springboot-vault-consul-demo-api
+```
+Add the file, `bootstrap.yml`and edit like below. The value of `token` is the value retreived when Vault started.
+```yml
+spring:
+  application:
+    name: book-service
+  cloud:
+    vault:
+      uri: http://127.0.0.1:8200
+      token: ((ROOT_TOKEN))
+      mysql:
+        enabled: true
+        role: my-role
+        backend: database
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/mysqlboot
+```
+
+```console
+$ ./mvnw clean package
+$ java -jar target/demo-0.0.1-SNAPSHOT.jar --server.port=7070
+$ java -jar target/demo-0.0.1-SNAPSHOT.jar --server.port=9090 #Shold be another terminal
+```
+
+Make sure API is running and connect to Database via Vault
+```console
+$ curl http://localhost:8080/allbooks | jq
+[
+  {
+    "id": "1",
+    "title": "What's HashiCorp",
+    "author_name": "HashiCorp",
+    "price": "1500"
+  },
+  {
+    "id": "2",
+    "title": "eXtream Programming",
+    "author_name": "Kent Beck",
+    "price": "1200"
+  },
+  {
+    "id": "3",
+    "title": "Site Reliability Engineering",
+    "author_name": "Google",
+    "price": "5600"
+  },
+  {
+    "id": "4",
+    "title": "Introduction of Nomad",
+    "author_name": "Masa Ito",
+    "price": "4900"
+  }
+]
+```
+
+Let's access to Consul Server(127.0.0.1:8500)
+TODO
+
+### Running UI App
+```console
+$ git clone https://github.com/tkaburagi/springboot-vault-consul-demo-ui
+$ ./mvnw clean package
+$ java -jar target/demo-0.0.1-SNAPSHOT.jar --server.port=8080
+```
+
+Let's access to Consul Server(127.0.0.1:8500) again.
+TODO
+
+### Browse UI App
+TODO
+
+In the Java terminal of the UI App, you can make sure which API is accessed by UI App
+```console
+
+```
+
+### Rotate Database Credential
 
