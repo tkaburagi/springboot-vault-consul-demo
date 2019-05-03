@@ -76,3 +76,35 @@ mysql> INSERT INTO book
     -> values ("4", "Introduction of Nomad", "Masa Ito", "4900");
 Query OK, 1 row affected (0.00 sec)
 ```
+
+Lastly, configure Vault Database Secret
+```console
+$ vault secrets enable database
+
+Success! Enabled the database secrets engine at: database/
+
+$ vault write database/config/mysqlboot \
+    plugin_name=mysql-database-plugin \
+    connection_url="{{username}}:{{password}}@tcp(127.0.0.1:3306)/" \
+    allowed_roles="my-role" \
+    username="root" \
+    password="root"
+
+$ vault write database/roles/my-role \
+	db_name=mysqlboot \
+	creation_statements="CREATE USER '{{name}}'@'%' IDENTIFIED BY '{{password}}';GRANT SELECT ON *.* TO '{{name}}'@'%';" \
+	default_ttl="1h" \
+	max_ttl="24h"
+
+Success! Data written to: database/roles/my-role
+
+$ vault read database/creds/my-role
+Key                Value
+---                -----
+lease_id           database/creds/my-role/3aWbdioHcLQ18rQ0ojWkALwH
+lease_duration     1h
+lease_renewable    true
+password           A1a-UwPd7NKUxkyyxY4d
+username           v-root-my-role-FRICYJqHBbxLY55GY
+```
+
