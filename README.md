@@ -84,17 +84,17 @@ $ vault secrets enable database
 Success! Enabled the database secrets engine at: database/
 
 $ vault write database/config/mysqlboot \
-    plugin_name=mysql-database-plugin \
-    connection_url="{{username}}:{{password}}@tcp(127.0.0.1:3306)/" \
-    allowed_roles="my-role" \
-    username="root" \
-    password="root"
+  plugin_name=mysql-database-plugin \
+  connection_url="{{username}}:{{password}}@tcp(127.0.0.1:3306)/" \
+  allowed_roles="my-role" \
+  username="root" \
+  password="root"
 
 $ vault write database/roles/my-role \
-	db_name=mysqlboot \
-	creation_statements="CREATE USER '{{name}}'@'%' IDENTIFIED BY '{{password}}';GRANT SELECT ON *.* TO '{{name}}'@'%';" \
-	default_ttl="1h" \
-	max_ttl="24h"
+  db_name=mysqlboot \
+  creation_statements="CREATE USER '{{name}}'@'%' IDENTIFIED BY '{{password}}';GRANT SELECT ON *.* TO '{{name}}'@'%';" \
+  default_ttl="1h" \
+  max_ttl="24h"
 
 Success! Data written to: database/roles/my-role
 
