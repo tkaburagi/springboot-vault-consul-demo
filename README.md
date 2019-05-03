@@ -46,4 +46,33 @@ mysql>
 ```mysql
 mysql> ALTER USER 'root'@'localhost' IDENTIFIED BY 'root';
 Query OK, 0 rows affected (0.00 sec)
+
+mysql> create database mysqlboot;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> use mysqlboot
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+
+mysql> INSERT INTO book
+    -> (id, title, author_name, price)
+    -> values ("1", "What's HashiCorp", "HashiCorp", "1500");
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO book
+    -> (id, title, author_name, price)
+    -> values ("2", "eXtream Programming", "Kent Beck", "1200");
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO book
+    -> (id, title, author_name, price)
+    -> values ("3", "Site Reliability Engineering", "Google", "5600");
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO book
+    -> (id, title, author_name, price)
+    -> values ("4", "Introduction of Nomad", "Masa Ito", "4900");
+Query OK, 1 row affected (0.00 sec)
 ```
