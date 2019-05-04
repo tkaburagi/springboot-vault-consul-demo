@@ -9,7 +9,7 @@ This repository is instruction for demo with simple app using Spring Boot + Vaul
 
 ## How to Demo
 
-### Prepartion
+### Pre-requisite
 * Make sure Java 12 is installed.
 * Make sure the latest Consul and Vault is installed.
 * Make sure MySQL 5.7 is installed.
@@ -140,7 +140,7 @@ username           v-root-my-role-FRICYJqHBbxLY55GY
 ```console
 $ git clone https://github.com/tkaburagi/springboot-vault-consul-demo-api
 ```
-Add the file, `bootstrap.yml`and edit like below. The value of `token` is the value retreived when Vault started.
+Add the file, `bootstrap.yml`and edit like below. Replace the `ROOT_TOKEN`. It's the value retreived when Vault started.
 ```yml
 spring:
   application:
@@ -163,7 +163,7 @@ $ java -jar target/demo-0.0.1-SNAPSHOT.jar --server.port=7070
 $ java -jar target/demo-0.0.1-SNAPSHOT.jar --server.port=9090 #Shold be another terminal
 ```
 
-Make sure API is running and connect to Database via Vault
+Make sure API is running and connect to Database using the credential managed by Vault
 ```console
 $ curl http://localhost:8080/allbooks | jq
 [
@@ -195,7 +195,9 @@ $ curl http://localhost:8080/allbooks | jq
 ```
 
 Let's access to Consul Server(127.0.0.1:8500)
-TODO
+![](https://raw.githubusercontent.com/tkaburagi/springboot-vault-consul-demo/master/consul-1.png)
+
+You can find two API app instances regsitered on Consul Server.
 
 ### Running UI App
 ```console
@@ -205,15 +207,26 @@ $ java -jar target/demo-0.0.1-SNAPSHOT.jar --server.port=8080
 ```
 
 Let's access to Consul Server(127.0.0.1:8500) again.
-TODO
+![](https://raw.githubusercontent.com/tkaburagi/springboot-vault-consul-demo/master/consul-2.png)
+
+You can find UI app instances regsitered on Consul Server.
 
 ### Browse UI App
-TODO
+Access to `127.0.0.1:8080` and you can see the simple table.
+![](https://raw.githubusercontent.com/tkaburagi/springboot-vault-consul-demo/master/uiapp.png)
 
 In the Java terminal of the UI App, you can make sure which API is accessed by UI App
 ```console
-
+~~~~~
+You accessed the API, http://192.168.11.2:7070
+~~~~~
+You accessed the API, http://192.168.11.2:9090
+~~~~~
 ```
+
+This shows Consul works as a DNS for Service Discovery between microservices.
+
+As you can see the source code, this app does not have specific credentials for database and Consul Server configurations. This abstracts by [Spring Cloud Vault](https://cloud.spring.io/spring-cloud-vault/) and [Spring Cloud Consul](https://spring.io/projects/spring-cloud-consul).
 
 ### Rotate Database Credential
 
